@@ -13,4 +13,8 @@
 
 > Done
 
-3. Next : Fix API request in Axios (not include localhost)
+3. Next : Make get request
+
+> Done
+
+4. Next : Search and filter

@@ -24,10 +24,16 @@ mongoose
 
 const languageSchema = new mongoose.Schema({
   polish: String,
-  english: String,
+  english: String
 });
 
 const Language = new mongoose.model("Language", languageSchema);
+
+app.get("/GetLanguage", (req, res) => {
+    Language.find({}, (err, foundWords) => {
+        res.send(foundWords)
+    })
+})
 
 app.post("/WordForm", (req, res) => {
   console.log(req.body);

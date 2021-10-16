@@ -4,7 +4,7 @@ import axios from "axios";
 const Form = () => {
   const [newWord, setNewWord] = useState({
     polish: "",
-    english: "",
+    english: "" 
   });
 
   //save new sentence
