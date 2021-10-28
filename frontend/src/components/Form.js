@@ -4,7 +4,12 @@ import axios from "axios";
 const Form = () => {
   const [newWord, setNewWord] = useState({
     polish: "",
-    english: "" 
+    english: "",
+    wordStatus: {
+      hasTested: false,
+      repeated: false,
+      timesRepeated: 0
+    }
   });
 
   //save new sentence
@@ -24,10 +29,10 @@ const Form = () => {
 // onClick event
 
 const submitWords = (e) => {
-    const {polish, english} = newWord;
+    const {polish, english, wordStatus} = newWord;
 
-    if (polish && english) {
-        axios.post("http://localhost:6969/WordForm", newWord)
+    if (polish && english && wordStatus) {
+        axios.post("http://localhost:6969/", newWord)
         .then(res => console.log(res))
 
     } else {

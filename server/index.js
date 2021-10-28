@@ -2,8 +2,9 @@ const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
 require("dotenv").config();
-
+const bodyParser = require("body-parser");
 const app = express();
+app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(express.urlencoded());
 app.use(cors());
@@ -22,38 +23,62 @@ mongoose
 
 //user Schema
 
-const languageSchema = new mongoose.Schema({
+const dailySchema = new mongoose.Schema({
   polish: String,
-  english: String
+  english: String,
+  wordStatus: {
+    hasTested: Boolean,
+    repeated: Boolean,
+    timesRepeated: Number,
+  },
 });
 
-const Language = new mongoose.model("Language", languageSchema);
+const Daily = new mongoose.model("Language", dailySchema);
 
-app.get("/GetLanguage", (req, res) => {
-    Language.find({}, (err, foundWords) => {
-        res.send(foundWords)
-    })
-})
+app
+  .route("/")
 
-app.post("/WordForm", (req, res) => {
-  console.log(req.body);
+  .get((req, res) => {
+    Daily.find({}, (err, foundWords) => {
+      res.send(foundWords);
+    });
+  })
 
-  const { polish, english } = req.body;
-  Language.findOne({ english: english }, (err, foundWord) => {
-    if (foundWord) {
-      res.send({ message: "The sentence already exist" });
-    } else {
-      const foundWord = new Language({ polish, english });
-      foundWord.save((err) => {
-        if (err) {
-          res.send(err);
-        } else {
-          res.send({ message: "Sucessful" });
-        }
-      });
-    }
+  .patch((req, res) => {
+    Daily.findOneAndUpdate(
+      { _id: req.body._id },
+      { $set: req.body },
+      function (err) {
+        !err && console.log("Successfully edited");
+      }
+    );
+  })
+
+  .delete((req, res) => {
+    Daily.deleteOne({_id: req.body._id}, (err => {
+      !err && console.log('deleted ' + req.body._id)
+    }))
+  })
+
+  .post((req, res) => {
+    console.log(req.body)
+    const { polish, english, wordStatus } = req.body;
+
+    Daily.findOne({ english: english }, (err, foundWord) => {
+      if (foundWord) {
+        res.send({ message: "The sentence already exist" });
+      } else {
+        const foundWord = new Daily({ polish, english, wordStatus });
+        foundWord.save((err) => {
+          if (err) {
+            res.send(err);
+          } else {
+            res.send({ message: "Successful" });
+          }
+        });
+      }
+    });
   });
-});
 
 app.listen(6969, () => {
   console.log("Started");
